@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: git-clone-
+  namespace: argo
+spec:
+  entrypoint: git-clone
+  templates:
+    - name: git-clone
+      dag:
+        tasks:
+          - name: first
+            template: git-clone-tmpl
+          - name: second
+            template: git-clone-ls-tmpl
+            dependencies: [first]
+    - name: git-clone-tmpl
+      container:
+        image: bitnami/git
+        command: [ git, clone ]
+        args: [ "https://github.com/c-linse/go-add-app" ]
+    - name: git-clone-ls-tmpl
+      container:
+        image: bitnami/git
+        command: [ ls ]
